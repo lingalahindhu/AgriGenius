@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+langgraph
+langchain-anthropic
+anthropic
+streamlit
+scikit-learn
+xgboost
+pandas
+numpy
+sqlalchemy
+python-dotenv
+requests
+pydantic
+joblib

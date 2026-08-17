@@ -1,0 +1,43 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment variables
+.env
+
+# Trained model files
+*.pkl
+*.pt
+*.pth
+*.h5
+*.joblib
+
+# Datasets (keep the folder structure, ignore the actual data)
+backend/data/*
+!backend/data/.gitkeep
+
+# Notebook checkpoints
+notebooks/.ipynb_checkpoints/
+
+# Databases
+*.db
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/
