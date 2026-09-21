@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
 from backend.services.database import init_db
+from backend.services.weather_api import get_available_regions
 from backend.agents.crop_recommendation_agent import recommend_crops
 from backend.agents.market_price_agent import get_market_price_analysis
 from backend.agents.health_monitoring_agent import check_crop_health
@@ -53,6 +54,10 @@ app.add_middleware(
 class CropRecommendationRequest(BaseModel):
     water_source: str = Field("Irrigated", description="Water access: Irrigated or Rainfed")
     season: str = Field("Kharif", description="Farming season: Kharif or Rabi")
+    mandal: Optional[str] = Field(None, description="Mandal / sub-district e.g. Wardhannapet, Parkal, Geesugonda")
+    village: Optional[str] = Field(None, description="Village name e.g. Chennaram, Nagaram")
+    latitude: Optional[float] = Field(None, description="Optional GPS latitude coordinate")
+    longitude: Optional[float] = Field(None, description="Optional GPS longitude coordinate")
 
 
 class ChatRequest(BaseModel):
@@ -93,14 +98,32 @@ def health_check():
     }
 
 
+@app.get("/regions")
+def get_regions():
+    """
+    Retrieve supported mandals, villages, and local geographical profiles for Warangal district.
+    """
+    try:
+        return get_available_regions()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.post("/crop-recommendation")
 def get_crop_recommendations(req: CropRecommendationRequest):
     """
-    Recommend top crops based on water source and season.
+    Recommend top crops based on water source, season, and hyper-local village/mandal.
     Soil and weather metrics are automatically retrieved.
     """
     try:
-        res = recommend_crops(water_source=req.water_source, season=req.season)
+        res = recommend_crops(
+            water_source=req.water_source,
+            season=req.season,
+            mandal=req.mandal,
+            village=req.village,
+            latitude=req.latitude,
+            longitude=req.longitude
+        )
         return res
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

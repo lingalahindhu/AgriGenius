@@ -1,7 +1,6 @@
 """
-AgriGenius Solutions — Main Dashboard Entrypoint.
-Fixes empty dark rectangle banner by removing unclosed HTML div markdown blocks.
-Fixes chat input text visibility (bright white text on dark background).
+AgriGenius — Main Dashboard Entrypoint.
+Uses inline styled HTML span wrapper to guarantee huge, ultra-bold, centered 'AgriGenius' title.
 """
 import sys
 import os
@@ -17,7 +16,7 @@ from typing import Dict, Any, Optional, List
 
 # Page configuration
 st.set_page_config(
-    page_title="AgriGenius Solutions",
+    page_title="AgriGenius",
     page_icon="🌾",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -42,15 +41,48 @@ def get_current_page() -> str:
 current_page = get_current_page()
 
 # Helper API functions with Python fallbacks
-def api_recommend_crops(water_source: str, season: str) -> Dict[str, Any]:
+def api_get_regions() -> Dict[str, Any]:
     try:
-        r = requests.post(f"{API_BASE_URL}/crop-recommendation", json={"water_source": water_source, "season": season}, timeout=3)
+        r = requests.get(f"{API_BASE_URL}/regions", timeout=3)
+        if r.status_code == 200:
+            return r.json()
+    except Exception:
+        pass
+    from backend.services.weather_api import get_available_regions
+    return get_available_regions()
+
+def api_recommend_crops(
+    water_source: str,
+    season: str,
+    mandal: Optional[str] = None,
+    village: Optional[str] = None,
+    latitude: Optional[float] = None,
+    longitude: Optional[float] = None
+) -> Dict[str, Any]:
+    try:
+        payload = {
+            "water_source": water_source,
+            "season": season,
+            "mandal": mandal,
+            "village": village,
+            "latitude": latitude,
+            "longitude": longitude
+        }
+        r = requests.post(f"{API_BASE_URL}/crop-recommendation", json=payload, timeout=4)
         if r.status_code == 200:
             return r.json()
     except Exception:
         pass
     from backend.agents.crop_recommendation_agent import recommend_crops
-    return recommend_crops(water_source=water_source, season=season)
+    return recommend_crops(
+        water_source=water_source,
+        season=season,
+        mandal=mandal,
+        village=village,
+        latitude=latitude,
+        longitude=longitude
+    )
+
 
 def api_check_health(crop_type: str, growth_stage: str, file_bytes=None, file_name=None) -> Dict[str, Any]:
     try:
@@ -122,12 +154,15 @@ def api_chat(query: str) -> Dict[str, Any]:
     return process_farmer_query(query=query)
 
 
-# --- Page Glassmorphism & High-Contrast Chat Input Overrides ---
 is_module_page = current_page != "home"
 
 module_glass_css = f"""
 <style>
-    /* Dark green background with particle mesh */
+    /* Hide top Streamlit header bar */
+    header[data-testid="stHeader"] {{
+        display: none !important;
+    }}
+
     .stApp {{
         background-color: #0b170e !important;
         background-image: 
@@ -140,31 +175,16 @@ module_glass_css = f"""
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     }}
 
-    header[data-testid="stHeader"] {{
-        background: transparent !important;
+    .main .block-container {{
+        padding-top: 0.5rem !important;
+        padding-bottom: 4.0rem !important;
+        { "background: rgba(18, 38, 25, 0.85) !important; backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; border-radius: 24px !important; margin-top: 20px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.6) !important; max-width: 95% !important;" if is_module_page else "" }
     }}
 
-    /* Apply glass container directly to block container when inside a module page */
-    {".main .block-container { background: rgba(18, 38, 25, 0.85) !important; backdrop-filter: blur(24px) !important; -webkit-backdrop-filter: blur(24px) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; border-radius: 24px !important; padding: 40px !important; margin-top: 20px !important; box-shadow: 0 20px 60px rgba(0,0,0,0.6) !important; max-width: 95% !important; }" if is_module_page else ""}
-
-    /* Dashboard Title */
-    .dashboard-header {{
-        text-align: center;
-        margin-top: 0.5rem;
-        margin-bottom: 2.4rem;
+    .crop-rec-accent {{
+        color: #c8f668 !important;
     }}
 
-    .dashboard-title-main {{
-        font-size: 3.5rem !important;
-        font-weight: 800 !important;
-        color: #ffffff !important;
-        margin: 0 !important;
-        letter-spacing: -0.5px !important;
-        line-height: 1.15 !important;
-        text-shadow: 0 4px 25px rgba(0, 0, 0, 0.6) !important;
-    }}
-
-    /* Dashboard 6 Cards */
     .glass-card-container {{
         background: rgba(255, 255, 255, 0.06);
         backdrop-filter: blur(18px);
@@ -242,13 +262,10 @@ module_glass_css = f"""
     .btn-olive {{ background: #857032; color: #ffffff !important; }}
     .btn-blue {{ background: #0388c4; color: #ffffff !important; }}
 
-    /* High contrast typography for headings & text */
-    h1 {{ font-size: 2.6rem !important; color: #ffffff !important; font-weight: 800 !important; margin-bottom: 8px !important; }}
-    h2 {{ font-size: 2.1rem !important; color: #c8f668 !important; font-weight: 700 !important; }}
-    h3 {{ font-size: 1.6rem !important; color: #ffffff !important; font-weight: 700 !important; }}
+    h2 {{ font-size: 2.3rem !important; color: #c8f668 !important; font-weight: 800 !important; }}
+    h3 {{ font-size: 1.7rem !important; color: #ffffff !important; font-weight: 700 !important; }}
     p, span, div {{ color: #f8fafc !important; font-size: 1.15rem !important; }}
 
-    /* Labels - Bright White & Large */
     div[data-testid="stMarkdownContainer"] p, 
     label[data-testid="stWidgetLabel"] p,
     .stRadio label p, .stSelectbox label p, .stNumberInput label p, .stCheckbox label p {{
@@ -287,7 +304,6 @@ module_glass_css = f"""
     }}
     .stChatMessage p {{ color: #ffffff !important; font-size: 1.15rem !important; }}
 
-    /* FIX FOR CHAT INPUT BOX: DARK GREEN BACKGROUND WITH CRISP WHITE TEXT */
     div[data-testid="stChatInput"], 
     div[data-testid="stChatInput"] textarea, 
     div[data-baseweb="base-input"],
@@ -312,18 +328,16 @@ st.markdown(module_glass_css, unsafe_allow_html=True)
 
 
 # =============================================================
-# DASHBOARD HOME PAGE
+# DASHBOARD HOME PAGE (TITLE IS JUST "AgriGenius" - INLINE HUGE & BOLD)
 # =============================================================
 if current_page == "home":
 
-    st.markdown(
-        '''
-        <div class="dashboard-header">
-            <h1 class="dashboard-title-main">AgriGenius Solutions</h1>
-        </div>
-        ''',
-        unsafe_allow_html=True,
-    )
+    # Inline Styled Huge Ultra-Bold Title
+    st.markdown("""
+    <div style="text-align: center; margin-top: 15px; margin-bottom: 45px; width: 100%;">
+        <span style="font-size: 80.8rem !important; font-weight: 900 !important; color: #ffffff !important; letter-spacing: -1.5px; text-shadow: 0 6px 35px rgba(0,0,0,0.8), 0 0 30px rgba(200, 246, 104, 0.4); display: inline-block; font-family: system-ui, -apple-system, sans-serif;">AgriGenius</span>
+    </div>
+    """, unsafe_allow_html=True)
 
     c1, c2, c3 = st.columns(3)
 
@@ -453,9 +467,45 @@ if current_page == "home":
 elif current_page == "Crop Recommendation":
     st.markdown('<a href="?page=home" target="_self" class="pill-action-btn btn-lime">← Back to AgriGenius Dashboard</a><br><br>', unsafe_allow_html=True)
     
-    st.markdown("<h1 style='color:#c8f668 !important;'>🌱 Crop Recommendation Agent</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#ffffff !important; font-size:1.2rem;'><b>Automatic Data Retrieval Active</b>: Soil N-P-K, pH, temperature, humidity, and rainfall are pulled automatically from your datasets (Soil Health Card + OpenWeatherMap) instead of manual entry.</p>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style="margin-top: 15px; margin-bottom: 25px;">
+        <span style="font-size: 4.0rem !important; font-weight: 900 !important; color: #ffffff !important; letter-spacing: -1px; text-shadow: 0 6px 30px rgba(0,0,0,0.7); display: inline-block;">AgriGenius <span class="crop-rec-accent">Crop Recommendation</span></span>
+    </div>
+    """, unsafe_allow_html=True)
+    st.markdown("<p style='color:#ffffff !important; font-size:1.2rem;'><b>Hyper-Local Zero-Prompting Engine</b>: Select your Mandal and Village below. Village-specific Soil Health Card metrics, nearest APMC Mandi proximity, and live micro-weather are retrieved automatically without manual laboratory data entry.</p>", unsafe_allow_html=True)
 
+    # Hyper-Local Regional Hierarchy
+    regions_data = api_get_regions()
+    mandals_dict = regions_data.get("mandals", {})
+    mandal_names = sorted(list(mandals_dict.keys())) if mandals_dict else ["Wardhannapet", "Geesugonda", "Narsampet", "Parkal", "Dharmasagar"]
+
+    st.markdown("<h4 style='color:#c8f668; margin-bottom:8px;'>📍 1. Farm Location Hierarchy</h4>", unsafe_allow_html=True)
+    reg1, reg2 = st.columns(2)
+    with reg1:
+        selected_mandal = st.selectbox("Select Mandal / Sub-District:", mandal_names, index=0)
+
+    villages_in_mandal = mandals_dict.get(selected_mandal, [])
+    village_names = [v.get("village") for v in villages_in_mandal] if villages_in_mandal else ["Chennaram"]
+    with reg2:
+        selected_village = st.selectbox("Select Village (Gram Panchayat):", village_names, index=0)
+
+    matched_vinfo = next((v for v in villages_in_mandal if v.get("village") == selected_village), {})
+    v_lat = matched_vinfo.get("latitude", 17.9784)
+    v_lon = matched_vinfo.get("longitude", 79.5941)
+    v_soil = matched_vinfo.get("soil_type", "Deep Black Cotton Soil")
+    v_mandi = matched_vinfo.get("nearest_mandi", "Enumamula Warangal")
+    v_dist = matched_vinfo.get("mandi_distance_km", 10.0)
+
+    use_gps = st.checkbox("🛰️ Use Hyper-Local GPS Coordinates for Live Weather", value=True)
+    if use_gps:
+        st.markdown(
+            f"<div style='background:rgba(255,255,255,0.06); padding:10px 14px; border-radius:8px; margin-bottom:15px; border-left:4px solid #c8f668;'>"
+            f"<span style='color:#ffffff; font-size:0.95rem;'>📌 <b>Target Village</b>: {selected_village}, {selected_mandal} | <b>GPS</b>: {v_lat}°N, {v_lon}°E | <b>Soil</b>: {v_soil} | <b>Nearest Market</b>: {v_mandi} ({v_dist} km)</span>"
+            f"</div>",
+            unsafe_allow_html=True
+        )
+
+    st.markdown("<h4 style='color:#c8f668; margin-top:10px; margin-bottom:8px;'>🌾 2. Farming Setup</h4>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
         water_source = st.radio("Water Access Source:", ["Irrigated", "Rainfed"])
@@ -463,19 +513,39 @@ elif current_page == "Crop Recommendation":
         season = st.radio("Farming Season:", ["Kharif", "Rabi"])
 
     if st.button("🌾 Get Crop Recommendations", type="primary", use_container_width=True):
-        with st.spinner("Analyzing soil & weather parameters for Warangal..."):
-            res = api_recommend_crops(water_source, season)
+        with st.spinner(f"Analyzing hyper-local soil & live weather for {selected_village}, {selected_mandal}..."):
+            res = api_recommend_crops(
+                water_source=water_source,
+                season=season,
+                mandal=selected_mandal,
+                village=selected_village,
+                latitude=v_lat if use_gps else None,
+                longitude=v_lon if use_gps else None
+            )
 
-        st.markdown("<h3 style='color:#c8f668 !important; margin-top:20px;'>Top 2–3 Recommended Crops</h3>", unsafe_allow_html=True)
+        st.markdown("<h3 style='color:#c8f668 !important; margin-top:25px;'>🌱 Top Recommended Crops for Your Village</h3>", unsafe_allow_html=True)
         soil = res.get("retrieved_soil", {})
         weather = res.get("retrieved_weather", {})
 
-        with st.expander("📍 Auto-Retrieved Soil & Weather Metrics Breakdown"):
-            st.write(f"• **Soil Health Card Profile**: {soil.get('soil_type')} (N: {soil.get('N')} kg/ha, P: {soil.get('P')} kg/ha, K: {soil.get('K')} kg/ha, pH: {soil.get('pH')})")
-            st.write(f"• **OpenWeatherMap Profile**: {weather.get('temperature')}°C | {weather.get('humidity')}% Humidity | {weather.get('rainfall')}mm Rainfall")
+        # Hyper-Local Metrics Card
+        with st.expander("📍 Hyper-Local Village Soil & Weather Metrics Breakdown", expanded=True):
+            m1, m2, m3, m4 = st.columns(4)
+            m1.metric("Soil Type", soil.get("soil_type", "Black Soil").split("/")[0].strip())
+            m2.metric("Soil pH", f"{soil.get('pH', 6.8)}")
+            m3.metric("Live Temperature", f"{weather.get('temperature', 29.5)}°C")
+            m4.metric("Live Humidity", f"{weather.get('humidity', 72)}%")
+
+            m5, m6, m7, m8 = st.columns(4)
+            m5.metric("Nitrogen (N)", f"{soil.get('N', 90)} kg/ha")
+            m6.metric("Phosphorus (P)", f"{soil.get('P', 42)} kg/ha")
+            m7.metric("Potassium (K)", f"{soil.get('K', 43)} kg/ha")
+            m8.metric("Nearest Mandi", f"{soil.get('nearest_mandi', 'Warangal')} ({soil.get('mandi_distance_km', 10)} km)")
+
+            st.caption(f"Source: {soil.get('source')} | Weather: {weather.get('source')}")
 
         for r in res.get("recommendations", []):
-            st.success(f"**{r['crop']}** — Confidence Score: **{int(r['confidence']*100)}%**\n\n*Plain-Language Reason*: {r['reason']}")
+            st.success(f"**{r['crop']}** — Match Confidence: **{int(r['confidence']*100)}%**\n\n*Plain-Language Reason*: {r['reason']}")
+
 
 
 # =============================================================

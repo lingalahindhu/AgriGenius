@@ -27,12 +27,26 @@ def api_recommend_crops(water_source: str, season: str):
 st.markdown("""
 <style>
     .stApp { background-color: #0b170e !important; color: #ffffff !important; font-size: 1.1rem; }
+    .crop-rec-big-title {
+        font-size: 5.2rem !important;
+        font-weight: 900 !important;
+        color: #ffffff !important;
+        margin-top: 10px !important;
+        margin-bottom: 10px !important;
+        letter-spacing: -1.5px !important;
+        text-shadow: 0 6px 30px rgba(0,0,0,0.7) !important;
+        line-height: 1.1 !important;
+    }
+    .crop-rec-accent {
+        color: #c8f668 !important;
+    }
     h1, h2, h3, h4, p, span, label { color: #ffffff !important; }
     .stRadio label p { color: #ffffff !important; font-size: 1.15rem !important; }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🌱 Crop Recommendation Agent — AgriGenius Solutions")
+# Big, ultra-bold AgriGenius title
+st.markdown('<h1 class="crop-rec-big-title">AgriGenius <span class="crop-rec-accent">Crop Recommendation</span></h1>', unsafe_allow_html=True)
 st.caption("Warangal District, Telangana • Soil Health Card & Local Weather Auto-Retrieved")
 
 st.info("ℹ️ **Automated Data Retrieval Active**: Soil parameters (N, P, K, pH) and weather metrics (temperature, humidity, rainfall) are automatically retrieved for your location instead of farmer entry.")
@@ -47,7 +61,7 @@ if st.button("🌾 Get Crop Recommendations", type="primary", use_container_widt
     with st.spinner("Analyzing soil & weather parameters for Warangal..."):
         res = api_recommend_crops(water_source, season)
 
-    st.markdown("### Top 2–3 Recommended Crops")
+    st.markdown("<h3 style='color:#c8f668 !important; margin-top:20px;'>Top 2–3 Recommended Crops</h3>", unsafe_allow_html=True)
     soil = res.get("retrieved_soil", {})
     weather = res.get("retrieved_weather", {})
 
