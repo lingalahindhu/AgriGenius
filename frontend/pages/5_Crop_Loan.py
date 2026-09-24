@@ -39,7 +39,7 @@ l1, l2 = st.columns(2)
 with l1:
     land_ha = st.number_input("Farm Landholding Size (Hectares):", min_value=0.1, max_value=50.0, value=2.0, step=0.1)
 with l2:
-    plan_crop = st.selectbox("Planned Crop Plan:", ["Cotton", "Paddy", "Maize", "Red Gram"])
+    plan_crop = st.selectbox("Planned Crop Plan:", ["Cotton", "Paddy", "Maize", "Red Gram", "Groundnut", "Bengal Gram", "Green Gram"])
 
 if auto_yield_val:
     st.write(f"• **Auto-passed Predicted Yield from Module 3**: **{auto_yield_val} Quintals**")

@@ -37,7 +37,7 @@ auto_damage_flag = health_signal.get("damage_flag", False)
 
 i1, i2 = st.columns(2)
 with i1:
-    ins_crop = st.selectbox("Insured Crop Type:", ["Cotton", "Paddy", "Maize", "Red Gram"])
+    ins_crop = st.selectbox("Insured Crop Type:", ["Cotton", "Paddy", "Maize", "Red Gram", "Groundnut", "Bengal Gram", "Green Gram"])
     ins_area = st.number_input("Insured Land Area (Hectares):", min_value=0.1, max_value=50.0, value=2.0, step=0.1)
 with i2:
     ins_damage = st.checkbox("Disease / Damage Flag Active", value=auto_damage_flag)

@@ -42,7 +42,7 @@ auto_harvest_date = yield_signal.get("estimated_harvest_date")
 
 m1, m2 = st.columns(2)
 with m1:
-    crop_name = st.selectbox("Select Crop Name:", ["Cotton", "Paddy", "Maize", "Red Gram"])
+    crop_name = st.selectbox("Select Crop Name:", ["Cotton", "Paddy", "Maize", "Red Gram", "Groundnut", "Bengal Gram", "Green Gram"])
 with m2:
     mandi_name = st.selectbox("Select Mandi Preference:", ["All Mandis", "Warangal", "Hanamkonda", "Parkal", "Narsampet"])
 

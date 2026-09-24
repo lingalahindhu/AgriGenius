@@ -184,6 +184,132 @@ MOCK_MANDI_DATA: List[Dict[str, Any]] = [
         "min_price": 6850,
         "max_price": 7300,
         "date": "2026-08-13"
+    },
+
+    # Groundnut
+    {
+        "mandi": "Warangal",
+        "crop": "Groundnut",
+        "variety": "Bold (Pod)",
+        "current_price_per_quintal": 6450,
+        "previous_price": 6300,
+        "min_price": 6100,
+        "max_price": 6600,
+        "date": "2026-08-13"
+    },
+    {
+        "mandi": "Hanamkonda",
+        "crop": "Groundnut",
+        "variety": "Bold",
+        "current_price_per_quintal": 6380,
+        "previous_price": 6400,
+        "min_price": 6050,
+        "max_price": 6500,
+        "date": "2026-08-13"
+    },
+    {
+        "mandi": "Parkal",
+        "crop": "Groundnut",
+        "variety": "Java",
+        "current_price_per_quintal": 6500,
+        "previous_price": 6350,
+        "min_price": 6200,
+        "max_price": 6650,
+        "date": "2026-08-13"
+    },
+    {
+        "mandi": "Narsampet",
+        "crop": "Groundnut",
+        "variety": "Bold",
+        "current_price_per_quintal": 6320,
+        "previous_price": 6320,
+        "min_price": 6000,
+        "max_price": 6450,
+        "date": "2026-08-13"
+    },
+
+    # Bengal Gram
+    {
+        "mandi": "Warangal",
+        "crop": "Bengal Gram",
+        "variety": "Desi Chickpea",
+        "current_price_per_quintal": 5600,
+        "previous_price": 5450,
+        "min_price": 5300,
+        "max_price": 5750,
+        "date": "2026-08-13"
+    },
+    {
+        "mandi": "Hanamkonda",
+        "crop": "Bengal Gram",
+        "variety": "Desi",
+        "current_price_per_quintal": 5550,
+        "previous_price": 5550,
+        "min_price": 5250,
+        "max_price": 5650,
+        "date": "2026-08-13"
+    },
+    {
+        "mandi": "Parkal",
+        "crop": "Bengal Gram",
+        "variety": "Desi",
+        "current_price_per_quintal": 5680,
+        "previous_price": 5500,
+        "min_price": 5350,
+        "max_price": 5800,
+        "date": "2026-08-13"
+    },
+    {
+        "mandi": "Narsampet",
+        "crop": "Bengal Gram",
+        "variety": "Desi",
+        "current_price_per_quintal": 5500,
+        "previous_price": 5520,
+        "min_price": 5200,
+        "max_price": 5600,
+        "date": "2026-08-13"
+    },
+
+    # Green Gram
+    {
+        "mandi": "Warangal",
+        "crop": "Green Gram",
+        "variety": "Shiny Green Mung",
+        "current_price_per_quintal": 7800,
+        "previous_price": 7650,
+        "min_price": 7400,
+        "max_price": 8000,
+        "date": "2026-08-13"
+    },
+    {
+        "mandi": "Hanamkonda",
+        "crop": "Green Gram",
+        "variety": "Common Mung",
+        "current_price_per_quintal": 7720,
+        "previous_price": 7750,
+        "min_price": 7350,
+        "max_price": 7900,
+        "date": "2026-08-13"
+    },
+    {
+        "mandi": "Parkal",
+        "crop": "Green Gram",
+        "variety": "Grade A",
+        "current_price_per_quintal": 7850,
+        "previous_price": 7700,
+        "min_price": 7500,
+        "max_price": 8050,
+        "date": "2026-08-13"
+    },
+    {
+        "mandi": "Narsampet",
+        "crop": "Green Gram",
+        "variety": "Common",
+        "current_price_per_quintal": 7680,
+        "previous_price": 7680,
+        "min_price": 7300,
+        "max_price": 7800,
+        "date": "2026-08-13"
     }
 ]
 

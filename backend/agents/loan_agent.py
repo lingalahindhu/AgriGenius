@@ -18,14 +18,24 @@ def evaluate_loan(
     Evaluate simulated Kisan Credit Card (KCC) loan eligibility and calculate scale of finance.
     """
     land = max(float(land_size), 0.1)
-    crop_norm = crop_plan.strip().capitalize() if crop_plan else "Cotton"
+    crop_clean = crop_plan.strip().lower() if crop_plan else "cotton"
+    crop_map = {
+        "cotton": "Cotton", "paddy": "Paddy", "rice": "Paddy", "maize": "Maize", "corn": "Maize",
+        "red gram": "Red Gram", "pigeon pea": "Red Gram", "tur": "Red Gram",
+        "groundnut": "Groundnut", "peanut": "Groundnut",
+        "bengal gram": "Bengal Gram", "chickpea": "Bengal Gram",
+        "green gram": "Green Gram", "mung bean": "Green Gram"
+    }
+    crop_norm = crop_map.get(crop_clean, crop_plan.strip().title() if crop_plan else "Cotton")
 
     scale_of_finance = {
         "Cotton": 65000,
         "Paddy": 55000,
         "Maize": 45000,
         "Red Gram": 40000,
-        "Groundnut": 50000
+        "Groundnut": 50000,
+        "Bengal Gram": 42000,
+        "Green Gram": 38000
     }
     rate_per_ha = scale_of_finance.get(crop_norm, 50000)
     suggested_loan = int(land * rate_per_ha)

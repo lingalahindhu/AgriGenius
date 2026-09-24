@@ -560,8 +560,26 @@ elif current_page == "Crop Health":
     h1, h2 = st.columns(2)
     with h1:
         uploaded_file = st.file_uploader("Upload Leaf / Plant Image:", type=["jpg", "png", "jpeg"])
-        crop_type = st.selectbox("Select Crop Type:", ["Cotton", "Paddy"])
-        growth_stage = st.selectbox("Growth Stage:", ["Sowing", "Vegetative", "Flowering", "Maturity"])
+        crop_options = [
+            "Cotton",
+            "Paddy",
+            "Maize",
+            "Red Gram",
+            "Groundnut",
+            "Bengal Gram",
+            "Green Gram"
+        ]
+        growth_stage_options = [
+            "Germination / Seedling (0–10 days)",
+            "Early vegetative (10–25 days)",
+            "Vegetative (25–40 days)",
+            "Bud / Pre-flowering (35–45 days)",
+            "Flowering (40–55 days)",
+            "Pod formation (50–65 days)",
+            "Pod filling / Maturity (60–75+ days)"
+        ]
+        crop_type = st.selectbox("Select Crop Type:", crop_options)
+        growth_stage = st.selectbox("Growth Stage:", growth_stage_options)
         if uploaded_file:
             st.image(uploaded_file, caption="Uploaded Leaf Sample", width=260)
         run_btn = st.button("🩺 Run Diagnostic Check", type="primary", use_container_width=True)
@@ -598,7 +616,7 @@ elif current_page == "Yield Prediction":
     with y1:
         area_ha = st.number_input("Land Area (Hectares):", min_value=0.1, max_value=50.0, value=1.5, step=0.1)
     with y2:
-        crop_sel = st.selectbox("Crop Type:", ["Cotton", "Paddy", "Maize", "Red Gram"])
+        crop_sel = st.selectbox("Crop Type:", ["Cotton", "Paddy", "Maize", "Red Gram", "Groundnut", "Bengal Gram", "Green Gram"])
 
     health_signal = st.session_state.get("latest_health")
     if health_signal:
@@ -628,7 +646,7 @@ elif current_page == "Crop Loan":
     with l1:
         land_ha = st.number_input("Farm Landholding Size (Hectares):", min_value=0.1, max_value=50.0, value=2.0, step=0.1)
     with l2:
-        plan_crop = st.selectbox("Planned Crop Plan:", ["Cotton", "Paddy", "Maize", "Red Gram"])
+        plan_crop = st.selectbox("Planned Crop Plan:", ["Cotton", "Paddy", "Maize", "Red Gram", "Groundnut", "Bengal Gram", "Green Gram"])
 
     if auto_yield_val:
         st.write(f"• **Auto-passed Predicted Yield from Module 3**: **{auto_yield_val} Quintals**")
@@ -656,7 +674,7 @@ elif current_page == "Market Price":
 
     m1, m2 = st.columns(2)
     with m1:
-        crop_name = st.selectbox("Select Crop Name:", ["Cotton", "Paddy", "Maize", "Red Gram"])
+        crop_name = st.selectbox("Select Crop Name:", ["Cotton", "Paddy", "Maize", "Red Gram", "Groundnut", "Bengal Gram", "Green Gram"])
     with m2:
         mandi_name = st.selectbox("Select Mandi Preference:", ["All Mandis", "Warangal", "Hanamkonda", "Parkal", "Narsampet"])
 
@@ -692,7 +710,7 @@ elif current_page == "Crop Insurance":
 
     i1, i2 = st.columns(2)
     with i1:
-        ins_crop = st.selectbox("Insured Crop Type:", ["Cotton", "Paddy", "Maize", "Red Gram"])
+        ins_crop = st.selectbox("Insured Crop Type:", ["Cotton", "Paddy", "Maize", "Red Gram", "Groundnut", "Bengal Gram", "Green Gram"])
         ins_area = st.number_input("Insured Land Area (Hectares):", min_value=0.1, max_value=50.0, value=2.0, step=0.1)
     with i2:
         ins_damage = st.checkbox("Disease / Damage Flag Active", value=auto_damage_flag)

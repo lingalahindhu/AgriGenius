@@ -36,7 +36,7 @@ y1, y2 = st.columns(2)
 with y1:
     area_ha = st.number_input("Land Area (Hectares):", min_value=0.1, max_value=50.0, value=1.5, step=0.1)
 with y2:
-    crop_sel = st.selectbox("Crop Type:", ["Cotton", "Paddy", "Maize", "Red Gram"])
+    crop_sel = st.selectbox("Crop Type:", ["Cotton", "Paddy", "Maize", "Red Gram", "Groundnut", "Bengal Gram", "Green Gram"])
 
 health_signal = st.session_state.get("latest_health")
 if health_signal:

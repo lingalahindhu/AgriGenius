@@ -20,15 +20,25 @@ def evaluate_insurance(
     Automatically factors damage flags originating from Health Monitoring Agent.
     """
     area = max(float(land_area), 0.1)
-    crop_norm = crop_type.strip().capitalize() if crop_type else "Cotton"
-    region_norm = region.strip().capitalize() if region else "Warangal"
+    crop_clean = crop_type.strip().lower() if crop_type else "cotton"
+    crop_map = {
+        "cotton": "Cotton", "paddy": "Paddy", "rice": "Paddy", "maize": "Maize", "corn": "Maize",
+        "red gram": "Red Gram", "pigeon pea": "Red Gram", "tur": "Red Gram",
+        "groundnut": "Groundnut", "peanut": "Groundnut",
+        "bengal gram": "Bengal Gram", "chickpea": "Bengal Gram",
+        "green gram": "Green Gram", "mung bean": "Green Gram"
+    }
+    crop_norm = crop_map.get(crop_clean, crop_type.strip().title() if crop_type else "Cotton")
+    region_norm = region.strip().title() if region else "Warangal"
 
     sum_insured_per_ha = {
         "Cotton": 75000,
         "Paddy": 60000,
         "Maize": 50000,
         "Red Gram": 45000,
-        "Groundnut": 52000
+        "Groundnut": 52000,
+        "Bengal Gram": 48000,
+        "Green Gram": 42000
     }
     rate = sum_insured_per_ha.get(crop_norm, 60000)
     total_sum_insured = int(area * rate)

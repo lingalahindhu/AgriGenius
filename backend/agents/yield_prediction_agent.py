@@ -27,7 +27,15 @@ def predict_yield(
     Predict crop yield in quintals based on land area, auto-retrieved soil/weather, and auto-passed health signals.
     """
     area = max(float(land_area_hectares), 0.1)
-    crop_norm = crop.strip().capitalize() if crop else "Cotton"
+    crop_clean = crop.strip().lower() if crop else "cotton"
+    crop_map = {
+        "cotton": "Cotton", "paddy": "Paddy", "rice": "Paddy", "maize": "Maize", "corn": "Maize",
+        "red gram": "Red Gram", "pigeon pea": "Red Gram", "tur": "Red Gram",
+        "groundnut": "Groundnut", "peanut": "Groundnut",
+        "bengal gram": "Bengal Gram", "chickpea": "Bengal Gram",
+        "green gram": "Green Gram", "mung bean": "Green Gram"
+    }
+    crop_norm = crop_map.get(crop_clean, crop.strip().title() if crop else "Cotton")
 
     if not soil_data:
         soil_data = get_soil_data("Warangal")
@@ -39,7 +47,9 @@ def predict_yield(
         "Paddy": 50.0,
         "Maize": 40.0,
         "Red Gram": 14.0,
-        "Groundnut": 22.0
+        "Groundnut": 22.0,
+        "Bengal Gram": 16.0,
+        "Green Gram": 12.0
     }
     yield_per_ha = base_yields.get(crop_norm, 20.0)
 

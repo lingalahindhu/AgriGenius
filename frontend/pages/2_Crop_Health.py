@@ -38,9 +38,26 @@ st.caption("Computer Vision Leaf Disease Diagnostics")
 
 h_col1, h_col2 = st.columns(2)
 with h_col1:
-    uploaded_file = st.file_uploader("Upload Leaf / Plant Image:", type=["jpg", "png", "jpeg"])
-    crop_type = st.selectbox("Select Crop Type:", ["Cotton", "Paddy"])
-    growth_stage = st.selectbox("Growth Stage:", ["Sowing", "Vegetative", "Flowering", "Maturity"])
+    crop_options = [
+        "Cotton",
+        "Paddy",
+        "Maize",
+        "Red Gram",
+        "Groundnut",
+        "Bengal Gram",
+        "Green Gram"
+    ]
+    growth_stage_options = [
+        "Germination / Seedling (0–10 days)",
+        "Early vegetative (10–25 days)",
+        "Vegetative (25–40 days)",
+        "Bud / Pre-flowering (35–45 days)",
+        "Flowering (40–55 days)",
+        "Pod formation (50–65 days)",
+        "Pod filling / Maturity (60–75+ days)"
+    ]
+    crop_type = st.selectbox("Select Crop Type:", crop_options)
+    growth_stage = st.selectbox("Growth Stage:", growth_stage_options)
     if uploaded_file:
         st.image(uploaded_file, caption="Uploaded Leaf Sample", width=260)
     run_btn = st.button("🩺 Run Diagnostic Check", type="primary", use_container_width=True)
