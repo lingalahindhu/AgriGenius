@@ -48,6 +48,7 @@ def evaluate_loan(
     output = {
         "disclaimer": "SIMULATION ONLY - Not connected to real financial institutions",
         "eligibility_status": status,
+        "farmer_eligibility": status,
         "is_eligible": is_eligible,
         "land_size_ha": land,
         "crop_plan": crop_norm,

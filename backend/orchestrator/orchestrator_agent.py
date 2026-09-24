@@ -173,9 +173,10 @@ def yield_prediction_node(state: AgentState) -> AgentState:
 
 def loan_evaluation_node(state: AgentState) -> AgentState:
     res = evaluate_loan(land_size=2.0, crop_plan="Cotton")
+    status = res.get('farmer_eligibility') or res.get('eligibility_status', 'Eligible')
     response = (
         f"🏦 **AgriGenius Credit Simulation (Phase 2)**\n\n"
-        f"• **Status**: {res['farmer_eligibility']}\n"
+        f"• **Status**: {status}\n"
         f"• **Suggested Loan Limit**: ₹{res['suggested_loan_amount_inr']:,}\n"
         f"• **Scheme**: {res['scheme_name']}\n"
         f"• **Summary**: {res['application_summary']}\n\n"
