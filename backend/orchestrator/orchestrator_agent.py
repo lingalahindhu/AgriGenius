@@ -1,11 +1,12 @@
 """
 LangGraph Multi-Agent Orchestrator for AgriGenius.
 Coordinates incoming natural-language farmer queries for Warangal district, Telangana.
-Uses Anthropic Claude Sonnet 4.6 (claude-sonnet-4-6) when ANTHROPIC_API_KEY is available,
+Uses Google Gemini 3.6 Flash when GOOGLE_API_KEY is available,
 with automatic rule-based intent router fallback when unconfigured.
 """
 import os
 from typing import TypedDict, Optional, Dict, Any
+import requests
 from dotenv import load_dotenv
 
 from langgraph.graph import StateGraph, START, END
@@ -20,7 +21,7 @@ from backend.services.database import log_query
 
 load_dotenv()
 
-ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "").strip()
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "").strip() or os.getenv("ANTHROPIC_API_KEY", "").strip()
 
 
 class AgentState(TypedDict):
@@ -41,21 +42,15 @@ SYSTEM_PROMPT = (
 
 def intent_router_node(state: AgentState) -> AgentState:
     """
-    Determine farmer query intent using Claude Sonnet 4.6 or rule-based fallback.
+    Determine farmer query intent using Gemini or rule-based fallback.
     """
     query = state.get("query", "").strip()
     query_lower = query.lower()
     intent = "general"
 
-    # Attempt Anthropic Claude Sonnet 4.6 call if API key provided
-    if ANTHROPIC_API_KEY and ANTHROPIC_API_KEY != "your_anthropic_api_key_here":
+    # Attempt Gemini classification if a key is provided.
+    if GOOGLE_API_KEY and not GOOGLE_API_KEY.startswith("your_"):
         try:
-            from langchain_anthropic import ChatAnthropic
-            llm = ChatAnthropic(
-                model="claude-sonnet-4-6",
-                anthropic_api_key=ANTHROPIC_API_KEY,
-                temperature=0.1
-            )
             prompt = (
                 f"{SYSTEM_PROMPT}\n\n"
                 f"Classify the following query into exactly one of these intents: "
@@ -63,8 +58,16 @@ def intent_router_node(state: AgentState) -> AgentState:
                 f"Respond with only the intent key string.\n\n"
                 f"Query: {query}"
             )
-            res = llm.invoke(prompt)
-            classified = str(res.content).strip().lower()
+            response = requests.post(
+                "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent",
+                params={"key": GOOGLE_API_KEY},
+                json={"contents": [{"parts": [{"text": prompt}]}]},
+                timeout=10,
+            )
+            if response.status_code >= 400:
+                raise RuntimeError(f"Gemini request failed with HTTP {response.status_code}")
+            response_data = response.json()
+            classified = response_data["candidates"][0]["content"]["parts"][0]["text"].strip().lower()
             valid_intents = [
                 "crop_recommendation", "market_price", "health_monitoring",
                 "yield_prediction", "loan_evaluation", "insurance_evaluation", "general"
@@ -74,7 +77,7 @@ def intent_router_node(state: AgentState) -> AgentState:
                     intent = v
                     break
         except Exception as e:
-            print(f"[Orchestrator] Anthropic LLM call failed or key invalid, using rule-based fallback: {e}")
+            print(f"[Orchestrator] Gemini call failed or key invalid, using rule-based fallback: {e}")
 
     # Fallback rule-based routing if LLM was skipped or failed
     if intent == "general":
